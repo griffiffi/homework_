@@ -16,6 +16,7 @@
     color: #1a2e28;
     cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cellipse cx='12' cy='12' rx='10' ry='6' fill='%23f0ece4' stroke='%231a1612' stroke-width='1'/%3E%3Ccircle cx='12' cy='12' r='4' fill='%231a1612'/%3E%3Ccircle cx='13.5' cy='10.5' r='1.2' fill='%23f0ece4'/%3E%3C/svg%3E") 12 12, auto;
   }
+  
 
   body.stage-0 { background-color: #e8f7f2; color: #1a2e28; }
   body.stage-1 { background-color: #d4ede6; color: #1a2e28; }
@@ -116,6 +117,35 @@
   .eye-watcher.intense { opacity: 1; }
   .eye-svg { width: 100%; height: 100%; }
   .eye-pupil { transition: transform 0.08s ease-out; }
+
+/* waring */
+  .warning-box {
+    max-width: 680px;
+    margin: 40px auto;
+    padding: 20px 24px;
+    border: 1px solid rgba(255, 80, 80, 0.6);
+    background: rgba(0, 0, 0, 0.05);
+    border-left: 4px solid #ff3b3b;
+    font-family: 'Noto Sans SC', sans-serif;
+    line-height: 1.6;
+  }
+
+  .warning-box h2 {
+    font-size: 16px;
+    margin-bottom: 12px;
+    color: #b30000;
+  }
+
+  .warning-box p {
+    font-size: 13px;
+    margin-bottom: 10px;
+    opacity: 0.85;
+  }
+
+  .warning-small {
+    font-size: 11px;
+    opacity: 0.6;
+  }
 
   /* GLITCH text effect */
   .glitch {
@@ -340,6 +370,23 @@
 </style>
 </head>
 <body class="stage-0">
+<div class="warning-box">
+  <h2>⚠️ 使用前提示（光敏性预警）</h2>
+  <p>
+    本问卷包含光敏表现。
+  </p>
+  <p>
+    如果您对闪烁光源或高强度视觉刺激较为敏感（例如有光敏性癫痫史或类似不适经历），
+    建议在阅读前谨慎使用或立即关闭页面。
+  </p>
+  <p>
+    若您在使用过程中感到不适（如注意力波动、视觉疲劳等），
+    请随时停止本次问卷。
+  </p>
+  <p class="warning-small">
+    但我还会在这里。
+  </p>
+</div>
 
 <!-- Crack overlay -->
 <div id="crack-overlay">
