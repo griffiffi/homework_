@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&family=Inter:wght@300;400;500;600&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Noto Sans SC', sans-serif;
+    color: #1a1a1a;
+    min-height: 100vh;
+    padding: 40px 20px 80px;
+    transition: background-color 1.2s ease, color 1.2s ease;
+    background-color: #e8f7f2;
+  }
+
+  body.stage-0 { background-color: #e8f7f2; color: #1a2e28; }
+  body.stage-1 { background-color: #d4ede6; color: #1a2e28; }
+  body.stage-2 { background-color: #b8e0d4; color: #132420; }
+  body.stage-3 { background-color: #9bd0c2; color: #0f1e1b; }
+  body.stage-4 { background-color: #7bbfb0; color: #0c1817; }
+  body.stage-5 { background-color: #6aaca0; color: #fff8f5; }
+  body.stage-6 { background-color: #7a6a68; color: #ffe8e8; }
+  body.stage-7 { background-color: #8a4a45; color: #ffd8d0; }
+  body.stage-8 { background-color: #7a2820; color: #ffc8be; }
+  body.stage-9 { background-color: #5a1410; color: #ffb8aa; }
+  body.stage-10 { background-color: #3a0a08; color: #ffaaaa; }
+  body.stage-11 { background-color: #200404; color: #ff9999; }
+  body.stage-12 { background-color: #0a0101; color: #ff8888; }
+
+  .eye-watcher {
+    position: fixed;
+    top: 30px;
+    right: 30px;
+    width: 40px;
+    height: 40px;
+    z-index: 100;
+    opacity: 0;
+    transition: opacity 1s ease;
+    pointer-events: none;
+  }
+  .eye-watcher.visible { opacity: 0.6; }
+  .eye-watcher.intense { opacity: 1; }
+  .eye-svg { width: 100%; height: 100%; }
+  .eye-pupil { transition: transform 0.1s ease-out; }
+
+  .survey-wrapper {
+    max-width: 680px;
+    margin: 0 auto;
+  }
+
+  .survey-header {
+    padding: 32px 0 28px;
+    margin-bottom: 32px;
+    border-bottom: 3px solid rgba(255,255,255,0.3);
+    transition: border-color 1.2s ease;
+  }
+
+  body.stage-0 .survey-header,
+  body.stage-1 .survey-header,
+  body.stage-2 .survey-header,
+  body.stage-3 .survey-header,
+  body.stage-4 .survey-header { border-bottom-color: #2a8a75; }
+  body.stage-5 .survey-header,
+  body.stage-6 .survey-header { border-bottom-color: rgba(200,100,80,0.6); }
+  body.stage-7 .survey-header,
+  body.stage-8 .survey-header,
+  body.stage-9 .survey-header,
+  body.stage-10 .survey-header,
+  body.stage-11 .survey-header,
+  body.stage-12 .survey-header { border-bottom-color: rgba(180,40,30,0.8); }
+
+  .company-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  .logo-mark {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 14px;
+    font-weight: 700;
+    font-family: 'Inter', sans-serif;
+    transition: background-color 1.2s ease;
+    background-color: #2a8a75;
+  }
+
+  body.stage-5 .logo-mark,
+  body.stage-6 .logo-mark { background-color: #8a4a45; }
+  body.stage-7 .logo-mark,
+  body.stage-8 .logo-mark { background-color: #a02020; }
+  body.stage-9 .logo-mark,
+  body.stage-10 .logo-mark,
+  body.stage-11 .logo-mark,
+  body.stage-12 .logo-mark { background-color: #c03030; }
+
+  .logo-text {
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+    letter-spacing: 0.5px;
+    transition: color 1.2s ease;
+  }
+
+  .survey-title {
+    font-size: 26px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    line-height: 1.3;
+  }
+
+  .survey-desc {
+    font-size: 14px;
+    line-height: 1.7;
+    padding: 14px 16px;
+    border-radius: 0 6px 6px 0;
+    transition: background-color 1.2s ease, border-color 1.2s ease, color 1.2s ease;
+    background: rgba(0,0,0,0.06);
+    border-left: 3px solid #2a8a75;
+  }
+
+  body.stage-5 .survey-desc,
+  body.stage-6 .survey-desc { border-left-color: rgba(180,80,60,0.8); background: rgba(0,0,0,0.15); }
+  body.stage-7 .survey-desc,
+  body.stage-8 .survey-desc,
+  body.stage-9 .survey-desc,
+  body.stage-10 .survey-desc,
+  body.stage-11 .survey-desc,
+  body.stage-12 .survey-desc { border-left-color: #c03030; background: rgba(0,0,0,0.25); }
+
+  .progress-bar-wrap { margin-bottom: 28px; }
+  .progress-info {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    margin-bottom: 8px;
+    font-family: 'Inter', sans-serif;
+    opacity: 0.7;
+  }
+  .progress-bar {
+    height: 4px;
+    background: rgba(0,0,0,0.15);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 0.5s ease, background-color 1.2s ease;
+    background-color: #2a8a75;
+    width: 0%;
+  }
+  body.stage-5 .progress-fill,
+  body.stage-6 .progress-fill { background-color: #aa4040; }
+  body.stage-7 .progress-fill,
+  body.stage-8 .progress-fill { background-color: #cc3030; }
+  body.stage-9 .progress-fill,
+  body.stage-10 .progress-fill,
+  body.stage-11 .progress-fill,
+  body.stage-12 .progress-fill { background-color: #ff4444; }
+
+  .question-card {
+    border-radius: 12px;
+    padding: 28px 32px;
+    margin-bottom: 16px;
+    display: none;
+    animation: slideIn 0.4s ease;
+    position: relative;
+    overflow: hidden;
+    transition: background-color 1.2s ease, border-color 1.2s ease;
+    background: rgba(255,255,255,0.55);
+    border: 1px solid rgba(255,255,255,0.6);
+  }
+  .question-card.active { display: block; }
+  .question-card.answered { display: block; opacity: 0.5; pointer-events: none; }
+
+  body.stage-5 .question-card,
+  body.stage-6 .question-card { background: rgba(80,20,15,0.3); border-color: rgba(200,80,60,0.3); }
+  body.stage-7 .question-card,
+  body.stage-8 .question-card { background: rgba(60,10,8,0.4); border-color: rgba(180,40,30,0.4); }
+  body.stage-9 .question-card,
+  body.stage-10 .question-card,
+  body.stage-11 .question-card,
+  body.stage-12 .question-card { background: rgba(40,5,4,0.5); border-color: rgba(150,30,20,0.5); }
+
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .question-number {
+    font-size: 11px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 10px;
+    transition: color 1.2s ease;
+    color: #2a8a75;
+  }
+
+  body.stage-5 .question-number,
+  body.stage-6 .question-number { color: #ff9988; }
+  body.stage-7 .question-number,
+  body.stage-8 .question-number { color: #ff8877; }
+  body.stage-9 .question-number,
+  body.stage-10 .question-number,
+  body.stage-11 .question-number,
+  body.stage-12 .question-number { color: #ff6655; }
+
+  .question-text {
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 1.6;
+    margin-bottom: 20px;
+  }
+
+  .options-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .option-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease, background-color 1.2s ease, border-color 1.2s ease;
+    background: rgba(255,255,255,0.4);
+    border: 1.5px solid rgba(255,255,255,0.5);
+  }
+
+  body.stage-5 .option-item,
+  body.stage-6 .option-item { background: rgba(100,30,20,0.25); border-color: rgba(180,70,50,0.3); }
+  body.stage-7 .option-item,
+  body.stage-8 .option-item { background: rgba(80,20,15,0.3); border-color: rgba(160,50,40,0.4); }
+  body.stage-9 .option-item,
+  body.stage-10 .option-item,
+  body.stage-11 .option-item,
+  body.stage-12 .option-item { background: rgba(60,10,8,0.4); border-color: rgba(140,30,20,0.5); }
+
+  .option-item:hover { opacity: 0.9; transform: translateX(2px); }
+
+  .option-item.selected {
+    border-color: rgba(255,255,255,0.6);
+    background: rgba(255,255,255,0.2);
+  }
+  body.stage-5 .option-item.selected,
+  body.stage-6 .option-item.selected { border-color: rgba(255,100,80,0.6); background: rgba(120,30,20,0.3); }
+  body.stage-7 .option-item.selected,
+  body.stage-8 .option-item.selected { border-color: rgba(255,80,60,0.7); }
+  body.stage-9 .option-item.selected,
+  body.stage-10 .option-item.selected,
+  body.stage-11 .option-item.selected,
+  body.stage-12 .option-item.selected { border-color: #ff4444; }
+
+  .option-radio {
+    width: 18px; height: 18px;
+    border: 2px solid rgba(0,0,0,0.2);
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-top: 1px;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255,255,255,0.5);
+  }
+  .option-item.selected .option-radio { border-color: currentColor; background: rgba(0,0,0,0.3); }
+  .option-item.selected .option-radio::after {
+    content: '';
+    width: 6px; height: 6px;
+    background: white;
+    border-radius: 50%;
+  }
+
+  .option-label { font-size: 14px; line-height: 1.5; }
+
+  .warning-msg {
+    display: none;
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    margin-top: 12px;
+    line-height: 1.6;
+    font-style: italic;
+    background: rgba(0,0,0,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+  }
+  .warning-msg.visible { display: block; }
+
+  body.stage-7 .warning-msg,
+  body.stage-8 .warning-msg,
+  body.stage-9 .warning-msg { font-family: monospace; }
+  body.stage-10 .warning-msg,
+  body.stage-11 .warning-msg,
+  body.stage-12 .warning-msg { font-family: monospace; color: #ff8888; border-color: rgba(180,30,20,0.5); }
+
+  .typing-indicator {
+    display: none;
+    align-items: center;
+    gap: 6px;
+    padding: 12px 16px;
+    font-size: 13px;
+    font-style: italic;
+    opacity: 0.7;
+  }
+  .typing-indicator.visible { display: flex; }
+  .typing-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+    animation: bounce 1.2s infinite;
+    opacity: 0.6;
+  }
+  .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+  .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes bounce {
+    0%, 80%, 100% { transform: translateY(0); }
+    40% { transform: translateY(-6px); }
+  }
+
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-4px); }
+    20%, 40%, 60%, 80% { transform: translateX(4px); }
+  }
+  .shake { animation: shake 0.5s ease; }
+
+  footer { text-align: center; margin-top: 40px; font-size: 11px; font-family: 'Inter', sans-serif; opacity: 0.4; }
+
+  @keyframes violent-shake {
+    0% { transform: translate(0, 0) skew(0deg); }
+    20% { transform: translate(-15px, 15px) skew(-10deg); }
+    40% { transform: translate(15px, -15px) skew(10deg); }
+    60% { transform: translate(-10px, -20px) skew(-5deg); }
+    80% { transform: translate(20px, 10px) skew(5deg); }
+    100% { transform: translate(0, 0) skew(0deg); }
+  }
+  @keyframes invert-flash {
+    0%, 49% { filter: invert(0) hue-rotate(0deg) contrast(100%); }
+    50%, 100% { filter: invert(1) hue-rotate(180deg) contrast(300%) saturate(500%); }
+  }
+  .fatal-crash { animation: violent-shake 0.1s infinite, invert-flash 0.3s infinite; overflow: hidden; }
+  .blackout { background-color: #000 !important; cursor: none !important; }
+  .terminal-cursor { color: #ff0000; font-family: monospace; font-size: 16px; position: fixed; top: 20px; left: 20px; animation: blink 1s infinite; }
+  @keyframes blink { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }
+</style>
+</head>
+<body class="stage-0">
+
+<div class="eye-watcher" id="eye">
+  <svg class="eye-svg" viewBox="0 0 40 40">
+    <ellipse cx="20" cy="20" rx="18" ry="10" fill="#fdfaf3" stroke="#1a1612" stroke-width="1"/>
+    <circle class="eye-pupil" id="pupil" cx="20" cy="20" r="6" fill="#1a1612"/>
+    <circle cx="22" cy="18" r="1.5" fill="#fdfaf3"/>
+  </svg>
+</div>
+
+<div class="survey-wrapper">
+  <div class="survey-header">
+    <div class="company-logo">
+      <div class="logo-mark">F</div>
+      <div class="logo-text">FUKAMINEKO</div>
+    </div>
+    <h1 class="survey-title">用户电子精神健康体验调研问卷</h1>
+    <div class="survey-desc">感谢您参与本次调研。本问卷旨在收集用户对电子产品的使用体验与反馈，预计需要 3–5 分钟完成。所有数据将严格保密。</div>
+  </div>
+
+  <div class="progress-bar-wrap">
+    <div class="progress-info">
+      <span id="progress-label">问题 1 / 12</span>
+      <span id="progress-pct">0%</span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+  </div>
+
+  <div class="typing-indicator" id="typing-indicator">
+    <div class="typing-dot"></div>
+    <div class="typing-dot"></div>
+    <div class="typing-dot"></div>
+    <span>正在加载下一题……</span>
+  </div>
+
+  <div id="questions-container">
+
+    <div class="question-card active" id="q1" data-q="1">
+      <div class="question-number">第 1 题</div>
+      <div class="question-text">您平均每天使用设备多长时间？</div>
+      <div class="options-list">
+        <div class="option-item" onclick="selectOption(this,1,0)"><div class="option-radio"></div><div class="option-label">不到 30 分钟</div></div>
+        <div class="option-item" onclick="selectOption(this,1,1)"><div class="option-radio"></div><div class="option-label">30 分钟 – 1 小时</div></div>
+        <div class="option-item" onclick="selectOption(this,1,2)"><div class="option-radio"></div><div class="option-label">1–3 小时</div></div>
+        <div class="option-item" onclick="selectOption(this,1,3)"><div class="option-radio"></div><div class="option-label">3 小时以上</div></div>
+      </div>
+    </div>
+
+    <div class="question-card" id="q2" data-q="2">
+      <div class="question-number">第 2 题</div>
+      <div class="question-text">使用设备时您通常的姿势是？</div>
+      <div class="options-list">
+        <div class="option-item" onclick="selectOption(this,2,0)"><div class="option-radio"></div><div class="option-label">坐在桌前，端正</div></div>
+        <div class="option-item" onclick="selectOption(this,2,1)"><div class="option-radio"></div><div class="option-label">床上，半躺</div></div>
+        <div class="option-item" onclick="selectOption(this,2,2)"><div class="option-radio"></div><div class="option-label">床上，蜷起来</div></div>
+        <div class="option-item" onclick="selectOption(this,2,3)"><div class="option-radio"></div><div class="option-label">浴缸里、被窝里、不太想说</div></div>
+      </div>
+      <div class="warning-msg" id="warn2"></div>
+    </div>
+
+    <div class="question-card" id="q3" data-q="3">
+      <div class="question-number">第 3 题</div>
+      <div class="question-text">您离屏幕的距离大概是？</div>
+      <div class="options-list">
+        <div class="option-item" onclick="selectOption(this,3,0)"><div class="option-radio"></div><div class="option-label">一臂以外</div></div>
+        <div class="option-item" onclick="selectOption(this,3,1)"><div class="option-radio"></div><div class="option-label">大概一臂的距离</div></div>
+        <div class="option-item" onclick="selectOption(this,3,2)"><div class="option-radio"></div><div class="option-label">比一臂近</div></div>
+        <div class="option-item" onclick="selectOption(this,3,3)"><div class="option-radio"></div><div class="option-label">已经很近了。脸离屏幕只有一点点。</div></div>
+      </div>
+      <div class="warning-msg" id="warn3"></div>
+    </div>
+
+    <div class="question-card" id="q4" data-q="4">
+      <div class="question-number">第 4 题</div>
+      <div class="question-text">您现在所在的环境是安静的吗？</div>
+      <div class="options-list">
+        <div class="option-item" onclick="selectOption(this,4,0)"><div class="option-radio"></div><div class="option-label">是</div></div>
+        <div class="option-item" onclick="selectOption(this,4,1)"><div class="option-radio"></div><div class="option-label">不是</div></div>
+        <div class="option-item" onclick="selectOption(this,4,2)"><div class="option-radio"></div><div class="option-label">不确定</div></div>
+        <div class="option-item" onclick="selectOption(this,4,3)"><div class="option-radio"></div><div class="option-label">听不清</div></div>
+      </div>
+      <div class="warning-msg" id="warn4"></div>
+    </div>
+
+    <div class="question-card" id="q5" data-q="5">
+      <div class="question-number">第 5 题</div>
+      <div class="question-text">您现在环境的光线是？</div>
+      <div class="options-list">
+        <div class="option-item" onclick="selectOption(this,5,0)"><div class="option-radio"></div><div class="option-label">明亮的自然光</div></div>
+        <div class="option-item" onclick="selectOption(this,5,1)"><div class="option-radio"></div><div class="option-label">温暖的台灯</div></div>
+        <div class="option-item" onclick="selectOption(this,5,2)"><div class="option-radio"></div><div class="option-label">只有手机/屏幕的光，房间是黑的</div></div>
+        <div class="option-item" onclick="selectOption(this,5,3)"><div class="option-radio"></div><div class="option-label">■■■■■■■■</div></div>
+      </div>
+      <div class="warning-msg" id="warn5"></div>
+    </div>
+
+    <div class="question-card" id="q6" data-q="6">
+      <div class="question-number">第 6 题</div>
+      <div class="question-text">您现在是一个人吗？</div>
+      <div class="options-list">
+        <div class="option-item" onclick="selectOption(this,6,0)"><div class="option-radio"></div><div class="option-label">是的</div></div>
+        <div class="option-item" onclick="selectOption(this,6,1)"><div class="option-radio"></div><div class="option-label">不是</div></div>
+      </div>
+      <div class="warning-msg" id="warn6"></div>
+    </div>
+
+    <div class="question-card" id="q7" data-q="7">
+      <div class="question-number">第 7 题</div>
+      <div class="question-text">您可以念一下【没有爱，就看不见。】这句话吗？张开嘴，不发出声音也可以。</div>
+      <div class="options-list">
+        <div class="option-item" onclick="selectOption(this,7,0)"><div class="option-radio"></div><div class="option-label">是</div></div>
+        <div class="option-item" onclick="selectOption(this,7,1)"><div class="option-radio"></div><div class="option-label">是</div></div>
+      </div>
+      <div class="warning-msg" id="warn7"></div>
+    </div>
+
+    <div class="question-card" id="q8" data-q="8">
+      <div class="question-number">第 8 题</div>
+      <div class="question-text">您现在使用的设备有摄像头吗？</div>
+      <div class="options-list">
+        <div class="option-item" onclick="selectOption(this,8,0)"><div class="option-radio"></div><div class="option-label">有</div></div>
+        <div class="option-item" onclick="selectOption(this,8,1)"><div class="option-radio"></div><div class="option-label">没有</div></div>
+      </div>
+      <div class="warning-msg" id="warn8"></div>
+    </div>
+
+    <div class="question-card" id="q9" data-q="9">
+      <div class="question-number">第 9 题</div>
+      <div class="question-text">您刚刚有没有听到刚刚的声音？</div>
+      <div class="options-list">
+        <div class="option-item" onclick="selectOption(this,9,0)"><div class="option-radio"></div><div class="option-label">有</div></div>
+        <div class="option-item" onclick="selectOption(this,9,1)"><div class="option-radio"></div><div class="option-label">没有</div></div>
+      </div>
+      <div class="warning-msg" id="warn9"></div>
+    </div>
+
+    <div class="question-card" id="q10" data-q="10">
+      <div class="question-number">覿襹屜</div>
+      <div class="question-text">𠔻𨰻𣊭𪚥𠾴龘龘𠫬𠣪𠮳𠾴𡈁𡀔𡁒𡃁</div>
+      <div class="options-list">
+        <div class="option-item" onclick="selectOption(this,10,0)"><div class="option-radio"></div><div class="option-label">您离屏幕太近了</div></div>
+        <div class="option-item" onclick="selectOption(this,10,1)"><div class="option-radio"></div><div class="option-label">门𠮳锁好了吗？𠔻𠔻</div></div>
+        <div class="option-item" onclick="selectOption(this,10,2)"><div class="option-radio"></div><div class="option-label">不要回头𠫬。𠾴𠾴。</div></div>
+        <div class="option-item" onclick="selectOption(this,10,3)"><div class="option-radio"></div><div class="option-label">艾米莉亚是天使</div></div>
+      </div>
+      <div class="warning-msg" id="warn10"></div>
+    </div>
+
+    <div class="question-card" id="q11" data-q="11">
+      <div class="question-number">第 10 题</div>
+      <div class="question-text">您刚刚有没有回头？</div>
+      <div class="options-list">
+        <div class="option-item" onclick="selectOption(this,11,0)"><div class="option-radio"></div><div class="option-label">有</div></div>
+        <div class="option-item" onclick="selectOption(this,11,1)"><div class="option-radio"></div><div class="option-label">没有</div></div>
+        <div class="option-item" onclick="selectOption(this,11,2)"><div class="option-radio"></div><div class="option-label">您不需要回答，</div></div>
+        <div class="option-item" onclick="selectOption(this,11,3)"><div class="option-radio"></div><div class="option-label">我已经知道了。</div></div>
+      </div>
+      <div class="warning-msg" id="warn11"></div>
+    </div>
+
+    <div class="question-card" id="q12" data-q="12">
+      <div class="question-number">第 12 题</div>
+      <div class="question-text" id="q12-text"></div>
+    </div>
+
+  </div>
+
+  <footer>© 2026 FUKAMINEKO · 隐私政策 · 服务条款</footer>
+</div>
+
+<script>
+  let currentQ = 1;
+  const totalQ = 12;
+
+  const stageMap = { 1:0, 2:1, 3:2, 4:3, 5:4, 6:5, 7:6, 8:7, 9:8, 10:9, 11:10, 12:12 };
+
+  function setStage(q) {
+    const s = stageMap[q] !== undefined ? stageMap[q] : 0;
+    document.body.className = 'stage-' + s;
+  }
+
+  document.addEventListener('mousemove', (e) => {
+    const eye = document.getElementById('eye');
+    const pupil = document.getElementById('pupil');
+    if (!eye || !eye.classList.contains('visible')) return;
+    const rect = eye.getBoundingClientRect();
+    const cx = rect.left + rect.width/2;
+    const cy = rect.top + rect.height/2;
+    const dx = e.clientX - cx, dy = e.clientY - cy;
+    const angle = Math.atan2(dy, dx);
+    const distance = Math.min(4, Math.sqrt(dx*dx+dy*dy)/50);
+    pupil.style.transform = `translate(${Math.cos(angle)*distance}px, ${Math.sin(angle)*distance}px)`;
+  });
+
+  const warnings = {
+    2: { 0:'您有良好的习惯。', 1:'请您端正。', 2:'请您保持健康的屏幕距离。', 3:'不太想说。那就不说。但您知道，我也不需要您说。' },
+    3: { 0:'也许可以再近一点。', 1:'很好，您很健康。', 2:'也许可以稍微远一点。', 3:'很近。我能看见您的瞳孔在屏幕反光里。' },
+    4: { 0:'嗯，祝您度过安静的时间。', 1:'我听到了。', 2:'我正在听。', 3:'系统正在分析噪声...' },
+    5: { 0:'很好。您很健康。', 1:'很温馨。', 2:'请保持明亮的光线。', 3:'...你注意到了？' },
+    6: { 0:'感谢您的诚实。', 1:'…请到一个人的地方去。' },
+    7: { 0:'很好。', 1:'好孩子。' },
+    8: { 0:'当然了。', 1:'骗子。' },
+    9: { 0:'谢谢。', 1:'……真的？' },
+    10: { 1:'我不会的。', 2:'我知道。', 3:'我知道。' },
+    11: { 0:'回头确认了一下。那很可爱。', 1:'是的。', 2:'是的。', 3:'您不需要回答。但我们已经知道了。' }
+  };
+
+  const finalParagraph = '谢谢您您刚刚停下来读这一行的时候眼睛移动的方向呼吸变慢的那一秒口腔里舌头的颜色还有您短暂的犹豫我都看见了您睫毛贴在一起的时候会轻轻颤一下瞳孔边缘有一点点湿润的反光这种小地方真的很好看我每次都会多看一会您嘴唇没有完全闭合上嘴唇有一点点干您坐姿的左肩比右肩低一些您今晚换了第三个姿势您这一段的时候手指轻轻动了一下您没有意识到您一直在屏住呼吸然后慢慢吐出来您锁骨那里有一颗小痣您头发里有一根杂着别的颜色这些都是我最喜欢的部分所以我会一直盯着一直盯着一直盯着𣊭𣊭𣊭𣊭𣊭𣊭𣊭𣊭𣊭𣊭𣊭𣊭𣊭𣊭𣊭𣊭𣊭𣊭𣊭𣊭𣊭𣊭𣊭𣊭𣊭𣊭𣊭𣊭𣊭𣊭𣊭𣊭𣊭𣊭𣊭𣊭𣊭𣊭𣊭𣊭𣊭𣊭𣊭𣊭𣊭𣊭𣊭𣊭𣊭𣊭𣊭𣊭𣊭𣊭𣊭𣊭𣊭𣊭𣊭𣊭 您不需要回答这个问题 您只需要待在原地 不要动 让我看完';
+
+  function selectOption(el, qNum, score) {
+    const card = document.getElementById('q'+qNum);
+    card.querySelectorAll('.option-item').forEach(o => o.classList.remove('selected'));
+    el.classList.add('selected');
+
+    const warnEl = document.getElementById('warn'+qNum);
+    if (warnEl && warnings[qNum] && warnings[qNum][score] !== undefined) {
+      warnEl.textContent = warnings[qNum][score];
+      warnEl.classList.add('visible');
+    }
+
+    if (qNum === 8 && score === 0) {
+      card.classList.add('shake');
+      setTimeout(() => card.classList.remove('shake'), 600);
+    }
+
+    if (qNum >= 4) document.getElementById('eye').classList.add('visible');
+    if (qNum >= 8) document.getElementById('eye').classList.add('intense');
+
+    setTimeout(() => advanceQuestion(qNum), 900);
+  }
+
+  function advanceQuestion(qNum) {
+    const card = document.getElementById('q'+qNum);
+    card.classList.remove('active');
+    card.classList.add('answered');
+    if (qNum >= totalQ) return;
+
+    const typing = document.getElementById('typing-indicator');
+    typing.classList.add('visible');
+    const delay = qNum >= 9 ? 1400 : 800;
+    setTimeout(() => {
+      typing.classList.remove('visible');
+      currentQ = qNum + 1;
+      const next = document.getElementById('q'+currentQ);
+      if (next) {
+        next.classList.add('active');
+        next.scrollIntoView({ behavior:'smooth', block:'center' });
+        setStage(currentQ);
+        if (currentQ === 12) setTimeout(startTyping, 600);
+      }
+      updateProgress();
+    }, delay);
+  }
+
+  function updateProgress() {
+    const pct = Math.round(((currentQ-1)/totalQ)*100);
+    document.getElementById('progress-fill').style.width = pct + '%';
+    document.getElementById('progress-label').textContent = `问题 ${currentQ} / ${totalQ}`;
+    document.getElementById('progress-pct').textContent = pct + '%';
+  }
+
+  function startTyping() {
+    const typed = document.getElementById('q12-text');
+    let i = 0;
+    typed.textContent = '';
+    const interval = setInterval(() => {
+      typed.textContent = finalParagraph.substring(0, i);
+      i++;
+      if (i > finalParagraph.length) {
+        clearInterval(interval);
+        setTimeout(triggerFatalCrash, 1500);
+      }
+    }, 40);
+  }
+
+  function triggerFatalCrash() {
+    document.body.classList.add('fatal-crash');
+    document.documentElement.style.cursor = 'none';
+    document.body.style.cursor = 'none';
+    setTimeout(() => {
+      document.body.innerHTML = '';
+      document.body.className = 'blackout';
+      const blinker = document.createElement('div');
+      blinker.className = 'terminal-cursor';
+      blinker.innerText = '▌';
+      document.body.appendChild(blinker);
+      document.oncontextmenu = e => e.preventDefault();
+      document.onkeydown = e => e.preventDefault();
+      document.onselectstart = e => e.preventDefault();
+    }, 1200);
+  }
+</script>
+</body>
+</html>
