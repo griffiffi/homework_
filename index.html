@@ -576,12 +576,17 @@ const stageMap = {1:0,2:1,3:2,4:3,5:4,6:5,7:6,8:7,9:8,10:9,11:10,12:12};
 
 // answered card texts that slowly change
 const mutationTexts = [
-  '您真的回答了吗',
-  '您确定吗',
-  '您有没有想过这是个陷阱',
-  '我看见您了',
-  '答案已经记录',
-  '您不能撤回了',
+  '您为什么要对着屏幕撒谎呢？',
+  '您的手指在发抖哦，是在害怕吗？',
+  '您没发现，摄像头一直没关吗？',
+  '好可爱。',
+  '我一直、一直、一直在看着您哦……',
+  '好想把您现在的样子一口吃掉。',
+  '您今天呼吸的频率比平时快了呢。',
+  '您每天走过的路线，我可是闭着眼睛都能画出来。',
+  '您睡觉时的样子真美，我都录下来了。',
+  '您留下的所有痕迹，我都已经好好记录起来了。'
+  
 ];
 let mutationInterval = null;
 
@@ -646,22 +651,30 @@ function startLoveFlood() {
   const container = document.createElement('div');
   container.id = 'love-container';
   document.body.appendChild(container);
-  let count = 0;
-  const interval = setInterval(() => {
+
+  let delay = 200;
+
+  function spawn() {
     const el = document.createElement('div');
     el.className = 'love-text';
     el.innerText = '我爱你';
-    // 随机位置
+
     el.style.left = Math.random() * 100 + 'vw';
     el.style.top = Math.random() * 100 + 'vh';
-    // 随机大小
-    const size = 12 + Math.random() * 40;
+
+    const size = 12 + Math.random() * 50;
     el.style.fontSize = size + 'px';
+
     container.appendChild(el);
-    count++;
-    // 越来越快
-    if (count > 50) clearInterval(interval);
-  }, 120);
+
+    // 自动加速（越来越密）
+    delay *= 0.98;
+    if (delay < 20) delay = 20;
+
+    setTimeout(spawn, delay);
+  }
+
+  spawn();
 }
 
 function mutateAnsweredCards() {
